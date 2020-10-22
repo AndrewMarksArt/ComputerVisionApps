@@ -59,7 +59,11 @@ print(lb.classes_)
 
 # display the results
 # draw the class label and probability on the output image
+<<<<<<< HEAD
 text = "{}: {:.2f}%".format(label, pred[0][i] * 100)
+=======
+text = "{}L {:.2f}%".format(label, pred[0][i] * 100)
+>>>>>>> tutorial-keras-getting-started
 cv2.putText(output, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
             (0, 0, 255), 2)
 
