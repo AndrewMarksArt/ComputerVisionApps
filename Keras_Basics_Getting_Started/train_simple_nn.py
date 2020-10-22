@@ -41,6 +41,7 @@ imagePaths = sorted(list(paths.list_images(args["dataset"])))
 random.seed(42)
 random.shuffle(imagePaths)
 
+
 # loop over the input images
 for imagePath in imagePaths:
     # load the image, resize to 32 x 32 ignoring aspect ratio
@@ -59,7 +60,7 @@ data = np.array(data, dtype="float") / 255.0
 labels = np.array(labels)
 
 # split the data into training and testing sets, 75/25 split
-(X_train, X_test, y_train, y_test) = train_test_split(data, label,
+(X_train, X_test, y_train, y_test) = train_test_split(data, labels,
                                                       test_size=0.25,
                                                       random_state=42)
 
@@ -109,4 +110,11 @@ plt.xlabel("Epoch #")
 plt.ylabel("Loss/Accuracy")
 plt.legend()
 plt.savefig(args["plot"])
+
+# save the model and label binarizer to disk
+print("[INFO] serializing network and label binarizer...")
+model.save(args["model"], save_format="h5")
+f = open(args["label_bin"], "wb")
+f.write(pickle.dumps(lb))
+f.close()
 
