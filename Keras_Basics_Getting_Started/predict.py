@@ -16,10 +16,12 @@ ap.add_argument("-m", "--model", required=True,
                 help="path to trained keras model")
 ap.add_argument("-l", "--labels", required=True,
                 help="path to label binarizer")
-ap.add_argument("-w", "--width", type=int, default=28,
+"""
+ap.add_argument("-w", "--width", type=int, default=32,
                 help="target spatial dimension width")
-ap.add_argument("-h", "--height", type=int, default=28,
+ap.add_argument("-h", "--height", type=int, default=32,
                 help="target spatial dimension height")
+"""
 ap.add_argument("-f", "--flatten", type=int, default=-1,
                 help="should we flatten the image")
 args = vars(ap.parse_args())
@@ -27,7 +29,7 @@ args = vars(ap.parse_args())
 # load the image and resize it to the target spatial dimensions
 image = cv2.imread(args["image"])
 output = image.copy()
-image = cv2.resize(image, (args["width"], args["height"]))
+image = cv2.resize(image, (32, 32))
 
 # scale the pixel values to between [0, 1]
 image = image.astype("float") / 255.0
@@ -44,6 +46,24 @@ else:
 # load the model and the label binarizer
 print("[INFO] loading network and label binarizer...")
 model = load_model(args["model"])
-lb = pickle.load(open(args["labels"], "rb").read())
+lb = pickle.loads(open(args["labels"], "rb").read())
 
+# make a prediction on the image
+pred = model.predict(image)
+print(pred)
+
+# find the class label index with the largest corresponding probability
+i = pred.argmax(axis=1)[0]
+label = lb.classes_[i]
+print(lb.classes_)
+
+# display the results
+# draw the class label and probability on the output image
+text = "{}L {:.2f}%".format(label, pred[0][i] * 100)
+cv2.putText(output, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
+            (0, 0, 255), 2)
+
+# show the output image
+cv2.imshow("Image", output)
+cv2.waitKey(0)
 
